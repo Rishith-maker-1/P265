@@ -6,12 +6,12 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def upload_form():
     return render_template('upload.html')
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def upload_video():
     file = request.files['file']
     filename = secure_filename(file.filename)
@@ -28,15 +28,15 @@ def upload_video():
             gray = cv2.cvtColor(frame_image, cv2.COLOR_RGB2GRAY)
             result.write(gray)
             video_file = 'blackandwhite.mp4'
-    finally:
+    except:
         print('Completed reading all the Frames from the Video')
     # Code for Project 265 end here
 
-    return render_template('upload.html', filename=filename)
+    return render_template('upload.html', filename=video_file)
 
 
 # Code for Project 265 download function starts here
-@app.route('/download')
+@app.route('/download', methods=['GET', 'POST'])
 def download_file():
     converted_video_path = "static/blackandwhite.mp4"
     return send_file(converted_video_path, as_attachment=True)
@@ -45,7 +45,7 @@ def download_file():
 # Code for Project 265 download function ends here
 
 
-@app.route('/display/<filename>')
+@app.route('/display/<filename>', methods=['GET', 'POST'])
 def display_video(filename):
     return redirect(url_for('static', filename=filename))
 
